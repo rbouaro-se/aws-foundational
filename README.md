@@ -3,7 +3,7 @@
 ### Lab 1: AWS CLI Setup & Multi-Region Resource Deployment
 - **Part 1: Environment Setup** → [`environment-setup/`](environment-setup/)
 - **Part 2: Multi-Region Resource Deployment** → [`resource-deployment-across-regions/`](resource-deployment-across-regions/)
-- **Part 3: Cost Analysis & Resource Management** → *Coming Soon*
+- **Part 3: Cost Analysis & Resource Management** → [`cost-analysis/`](cost-analysis/)
 
 ### Lab 1.2: Well-Architected Framework Assessment
 - **Part 1: Architecture Design** → *Coming Soon*
