@@ -1,0 +1,83 @@
+# Improvements Priority Matrix
+
+This document ranks all proposed improvements from the  [`Well-Architected review`](/lab-2/well-architected-assessment/well-architected-review.md) (Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability, and Service Quota Scalability). Ratings:
+
+-  Impact: High / Medium / Low (business, user, risk reduction value)
+-  Effort: High / Medium / Low (engineering time, complexity, coordination)
+-  Priority: P0 (Critical) / P1 (High) / P2 (Nice to have)
+
+Heuristics:
+
+-  P0: High impact / low or medium effort OR critical security / availability risk.
+-  P1: High impact / high effort OR medium impact / low effort (not blocking but valuable).
+-  P2: Medium/Low impact improvements, optimizations, or strategic enhancements.
+
+| Improvement                                                          | Pillar                                     | Impact | Effort | Priority | Justification                                                                                                     |
+| -------------------------------------------------------------------- | ------------------------------------------ | ------ | ------ | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| Implement CloudWatch Alarms & Dashboards                             | Operational Excellence                     | High   | Low    | P0       | Immediate detection reduces MTTR; low complexity to bootstrap core metrics/alarms.                                |
+| Infrastructure as Code (CloudFormation/Terraform)                    | Operational Excellence                     | High   | Medium | P0       | Enables repeatability, drift detection, and safer change control.                                                 |
+| Introduce Systems Manager (SSM) for patching & ops                   | Operational Excellence                     | High   | Medium | P1       | Centralizes patching & session mgmt; moderate setup.                                                              |
+| Centralized Logging (CloudWatch Logs aggregation)                    | Operational Excellence                     | High   | Medium | P0       | Essential for troubleshooting & audit; current gap increases MTTR risk.                                           |
+| Deployment automation (CI/CD pipeline)                               | Operational Excellence                     | High   | Medium | P1       | Reduces manual error & speeds releases; requires pipeline design.                                                 |
+| RDS Multi-AZ failover drill & runbook (validate)                     | Reliability                                | High   | Low    | P0       | Already Multi-AZ; untested failover undermines confidence in HA. Low effort test.                                 |
+| Define & implement backup/recovery plan (RDS + EC2 AMIs + retention) | Reliability                                | High   | Low    | P0       | Data loss risk until formalized; scripting snapshots & retention is straightforward.                              |
+| Implement Auto Scaling Groups (Web/App tiers)                        | Reliability / Performance                  | High   | Medium | P0       | Core to elasticity & resilience; prevents capacity exhaustion and reduces cost.                                   |
+| Automated backup verification (PITR tests)                           | Reliability                                | High   | Medium | P1       | Ensures restorability; more effort than enabling backups.                                                         |
+| Quota monitoring & alerts (On-Demand, EIPs)                          | Reliability / Operational Excellence       | Medium | Low    | P1       | Prevents silent scaling failures; easy with scheduled check/alarms.                                               |
+| Instance right-sizing review                                         | Performance / Cost                         | Medium | Low    | P1       | Quick analysis can reduce spend & improve perf headroom.                                                          |
+| Introduce caching layer (ElastiCache)                                | Performance Efficiency                     | High   | Medium | P1       | Reduces DB load; needs schema/session strategy design.                                                            |
+| Add CDN (CloudFront) for static assets                               | Performance Efficiency                     | High   | Low    | P0       | Immediate latency + cost benefits; quick to configure if assets defined.                                          |
+| Evaluate instance families & benchmarking                            | Performance Efficiency                     | Medium | Medium | P2       | Optimization after baseline elasticity & caching in place.                                                        |
+| Implement Auto Scaling policies (target tracking / scheduled)        | Performance Efficiency                     | High   | Low    | P0       | Ensures responsive capacity scaling; low incremental effort once ASG exists.                                      |
+| Enable encryption at rest (RDS, EBS)                                 | Security                                   | High   | Low    | P0       | Foundational control; native support makes enablement straightforward (may need re-provision for legacy volumes). |
+| Enforce TLS (ALB HTTPS + ACM)                                        | Security                                   | High   | Low    | P0       | Protects data in transit; low operational overhead.                                                               |
+| Configure CloudTrail (org / multi-region)                            | Security / Operational Excellence          | High   | Low    | P0       | Critical for audit & incident response; minimal setup.                                                            |
+| Enable VPC Flow Logs (subnet or VPC-level)                           | Security                                   | Medium | Low    | P1       | Assists network forensic analysis; moderate cost, simple enablement.                                              |
+| Least privilege IAM roles (EC2, RDS, deployment)                     | Security                                   | High   | Medium | P0       | Minimizes blast radius; requires policy audit/refactor.                                                           |
+| IAM access review & periodic re-certification                        | Security                                   | Medium | Medium | P2       | Governance enhancement after core controls in place.                                                              |
+| Add GuardDuty & Security Hub integration                             | Security                                   | High   | Low    | P0       | Rapid threat detection uplift; minimal deployment friction.                                                       |
+| Add AWS Config rules for drift/security posture                      | Security / Operational Excellence          | Medium | Medium | P2       | Improves governance; non-critical initially.                                                                      |
+| NAT Gateway consolidation strategy / PrivateLink adoption            | Cost Optimization / Security               | Medium | Medium | P2       | Potential savings but trade-off with AZ resilience.                                                               |
+| Adopt Savings Plans / Reserved Instances (baseline steady-state)     | Cost Optimization                          | High   | Low    | P0       | Immediate cost reduction once baseline utilization known.                                                         |
+| Implement Cost Explorer Budgets & Alerts                             | Cost Optimization                          | High   | Low    | P0       | Prevents uncontrolled spend; fast to set up.                                                                      |
+| Resource tagging standard & enforcement (CostCenter, Env, Owner)     | Cost Optimization / Operational Excellence | High   | Low    | P0       | Enables allocation & governance; simple tagging pass + policy.                                                    |
+| Spot Instance strategy (mixed ASG, diversification)                  | Cost Optimization / Performance            | High   | Medium | P1       | Significant savings; requires capacity diversification/testing.                                                   |
+| Request On-Demand Standard instances quota increase                  | Reliability / Scalability                  | High   | Low    | P0       | Prevents imminent scaling ceiling (16 cap) risk given growth.                                                     |
+| Request Elastic IP quota increase (if design retained)               | Reliability / Scalability                  | Medium | Low    | P1       | Avoids blocking future public endpoints; quick request.                                                           |
+| Preemptive Spot request quota increase                               | Scalability / Cost                         | Medium | Low    | P2       | Optional until Spot adoption roadmap committed.                                                                   |
+| Add lifecycle policies for log & snapshot retention                  | Cost Optimization / Operational Excellence | Medium | Low    | P1       | Controls long-term storage cost; easy once backups/logs centralized.                                              |
+| Implement start/stop schedules for non-prod EC2                      | Sustainability / Cost                      | Medium | Low    | P1       | Reduces idle runtime cost & emissions; simple with SSM or Instance Scheduler.                                     |
+| Instance scheduling & rightsizing for sustainability                 | Sustainability                             | Medium | Medium | P2       | Secondary benefit after core efficiency wins.                                                                     |
+| Introduce serverless for intermittent tasks (Lambda)                 | Sustainability / Cost                      | Medium | Medium | P2       | Architectural evolution; not urgent initially.                                                                    |
+| Add performance/load testing pipeline                                | Performance Efficiency / Reliability       | Medium | Medium | P2       | Validates scaling assumptions; effort to script scenarios.                                                        |
+| Document architecture & operational runbooks (failover, incident)    | Operational Excellence / Reliability       | High   | Low    | P0       | Accelerates incident response; low barrier—immediate value.                                                       |
+| Implement CI/CD (blue/green or rolling)                              | Operational Excellence / Reliability       | High   | Medium | P1       | Reduces deployment risk; depends on IaC & ASG adoption.                                                           |
+| Add synthetic canaries (CloudWatch Synthetics)                       | Reliability / Performance                  | Medium | Low    | P2       | Early customer-experience detection; after core monitoring.                                                       |
+| Add alarms on error rates / latency (ALB, target group, app)         | Reliability / Performance                  | High   | Low    | P0       | Core SLO visibility; quick via CloudWatch metrics.                                                                |
+| Configure WAF on ALB (if internet-facing)                            | Security                                   | High   | Low    | P1       | Mitigates common web exploits; modest setup.                                                                      |
+| Implement Secrets Manager / Parameter Store usage                    | Security                                   | High   | Low    | P0       | Eliminates plaintext secrets risk; straightforward adoption.                                                      |
+| Enforce TLS for internal service-to-service (if applicable)          | Security                                   | Medium | Medium | P2       | Deeper zero-trust posture; not first wave.                                                                        |
+| Add KMS CMKs (if regulatory key control needed)                      | Security / Compliance                      | Medium | Medium | P2       | Optional unless compliance mandates customer-managed keys.                                                        |
+| Enable automated image hardening pipeline (golden AMIs)              | Security / Operational Excellence          | Medium | High   | P2       | Larger effort; value grows with scale.                                                                            |
+| Implement drift detection (GitOps + Config + IaC validation)         | Operational Excellence                     | Medium | Medium | P2       | Strengthens governance; after core IaC maturity.                                                                  |
+| Establish regular game days (failover & incident simulation)         | Reliability / Operational Excellence       | Medium | Low    | P1       | Builds operational muscle; low tooling cost.                                                                      |
+| Add detailed tagging for sustainability metrics (e.g., Purpose)      | Sustainability / Cost                      | Low    | Low    | P2       | Enhances reporting granularity; low direct impact.                                                                |
+| Load-based DB scaling assessment (read replicas/aurora)              | Performance / Reliability                  | Medium | Medium | P2       | Future growth enabler; not urgent at current scale.                                                               |
+| Implement connection pooling (RDS Proxy)                             | Performance / Reliability                  | Medium | Low    | P1       | Stabilizes DB under spiky load; modest implementation effort.                                                     |
+| Introduce application-level structured logging (JSON)                | Operational Excellence                     | Medium | Low    | P1       | Improves searchability/analytics; easy library change.                                                            |
+| Centralize metrics & trace collection (X-Ray / OpenTelemetry)        | Performance / Operational Excellence       | Medium | Medium | P2       | Deeper observability after baseline metrics in place.                                                             |
+| Enforce MFA & SCP baseline (if multi-account)                        | Security                                   | High   | Medium | P1       | Strengthens identity perimeter; moderate org work.                                                                |
+| Implement organization-wide tagging policy / SCP enforcement         | Operational Excellence / Cost              | Medium | Medium | P2       | Prevents future drift; governance maturation step.                                                                |
+
+## Summary Roll-Up
+
+-  P0 (Critical): Focus first on monitoring, backups & recovery, RDS failover drill, encryption & CloudTrail, quota increases, tagging standard, Auto Scaling, CDN, secrets management, logging & alarm foundations.
+-  P1 (High): Scaling enhancements (Spot strategy), CI/CD automation, caching layer, IAM least privilege refinements, cost governance, connection pooling, SSM operations, game days.
+-  P2 (Nice to have / strategic): Optimization, deeper governance, advanced observability, sustainability refinements, serverless migration opportunities.
+
+## Next 30-Day Execution Snapshot (Suggested)
+
+1. Week 1: CloudWatch alarms, backup plan + test, encryption/TLS verification, tagging baseline, quota increase requests.
+2. Week 2: ASG implementation, CDN enablement, secrets manager integration, RDS failover drill + runbook.
+3. Week 3: CI/CD pipeline (infrastructure + application), cached layer design decision, cost budgets & alerts.
+4. Week 4: Spot strategy proposal, connection pooling (RDS Proxy), logging enrichment (structured JSON), prepare game day outline.
