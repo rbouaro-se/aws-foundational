@@ -11,6 +11,6 @@
 - **Part 3: Prioritization Matrix** → [`lab-2/prioritization-matrix/`](lab-2/prioritization-matrix/)
 
 ### Lab 1.3: Shared Responsibility Model & Security Audit
-- **Part 1: Shared Responsibility Matrix** → *Coming Soon*
-- **Part 2: Automated Security Audit** → *Coming Soon*
-- **Part 3: Remediation Planning** → *Coming Soon*
+- **Part 1: Shared Responsibility Matrix** → [`lab-3/shared-responsibility-matrix`](lab-3/shared-responsibility-matrix/)
+- **Part 2: Automated Security Audit** → [`lab-3/automated-security-audit`](lab-3/automated-security-audit/)
+- **Part 3: Remediation Planning** → [`lab-3/remediation-planning/`](lab-3/remediation-planning/)

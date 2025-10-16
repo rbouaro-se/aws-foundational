@@ -1,0 +1,29 @@
+Running security audit for Account: 211125690527 (Profile: default)
+
+==================== S3 Bucket Security ====================
+✓  Bucket amalitech-devops-ap-southeast-1-20251006-130612: Public access block fully enabled
+✓  Bucket amalitech-devops-ap-southeast-1-20251006-130612: Default encryption enabled
+✓  Bucket amalitech-devops-eu-west-1-20251006-130612: Public access block fully enabled
+✓  Bucket amalitech-devops-eu-west-1-20251006-130612: Default encryption enabled
+✓  Bucket amalitech-devops-us-east-1-20251006-130612: Public access block fully enabled
+✓  Bucket amalitech-devops-us-east-1-20251006-130612: Default encryption enabled
+✓  Bucket dt-story-blok-bucket: Public access block fully enabled
+✓  Bucket dt-story-blok-bucket: Default encryption enabled
+⚠  Bucket java-upskilling: Public access block NOT fully enforced (configuration missing)
+✓  Bucket java-upskilling: Default encryption enabled
+
+==================== IAM Security ====================
+✓  Root account MFA is enabled
+⚠  Password policy NOT configured
+
+==================== IAM Credential Report ====================
+✓  Credential report generated
+✓  No access keys older than 90 days
+
+==================== Additional Checks ====================
+⚠  CloudTrail: No trails configured
+⚠  VPC vpc-08f432aa46478bf89: Flow Logs NOT enabled
+⚠  Security Groups: Port 22 open to the world in 3 group(s)
+
+==================== Summary ====================
+Total issues found: 5
